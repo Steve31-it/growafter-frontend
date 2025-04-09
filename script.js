@@ -1,5 +1,3 @@
-const API_BASE = "https://growafter-server.onrender.com/api";
-
 var app = new Vue({
   el: "#app",
   data: {
@@ -9,67 +7,67 @@ var app = new Vue({
     searchQuery: "",
     showCheckOut: true,
     showModal: false,
-    submitted: false,
-
     lessons: [],
+    submitted: false,
     filteredLessons: [],
-
     order: {
       firstName: "",
       lastName: "",
       email: "",
-      city: "",
       state: "",
-      zipCode: "",
       phoneNumber: "",
-      deliveryMethod: ""
     },
-
     states: {
-      AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California", CO: "Colorado", CT: "Connecticut", DE: "Delaware",
-      FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky",
-      LA: "Louisiana", ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota", MS: "Mississippi",
-      MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada", NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico",
-      NY: "New York", NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon", PA: "Pennsylvania",
-      RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont",
-      VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming"
+      AD: "Abu Dhabi",
+      DU: "Dubai",
+      SH: "Sharjah",
+      AJ: "Ajman",
+      UQ: "Umm Al-Quwain",
+      FJ: "Fujairah",
+      RK: "Ras Al Khaimah",
     },
-
     cart: [],
-    message: "Vue is working!"
   },
-
   methods: {
+    // Fetch lessons from the server
     async fetchLessons() {
       try {
-        const response = await fetch(`${API_BASE}/lessons`);
+        const response = await fetch("https://growafter-server.onrender.com/api/lessons");
         if (!response.ok) throw new Error("Failed to fetch lessons");
         const data = await response.json();
         this.lessons = data;
-        this.filteredLessons = [...data];
+        this.filteredLessons = data;
       } catch (err) {
-        console.error("❌ Failed to fetch lessons:", err.message);
+        console.error("Failed to fetch lessons", err.message);
       }
     },
 
+    // Sorting function
     sortLessons() {
       const modifier = this.sortOrder === "ascending" ? 1 : -1;
       this.filteredLessons.sort((a, b) => {
-        if (this.sortCriteria === "name") return modifier * a.subject.localeCompare(b.subject);
-        if (this.sortCriteria === "location") return modifier * a.location.localeCompare(b.location);
-        if (this.sortCriteria === "space") return modifier * (a.spaces - b.spaces);
-        if (this.sortCriteria === "price") return modifier * (a.price - b.price);
-        if (this.sortCriteria === "rating") return modifier * (a.ratings - b.ratings);
-        return 0;
+        if (this.sortCriteria === "name") {
+          return modifier * (a.subject > b.subject ? 1 : -1);
+        } else if (this.sortCriteria === "location") {
+          return modifier * (a.location > b.location ? 1 : -1);
+        } else if (this.sortCriteria === "space") {
+          return modifier * (a.spaces - b.spaces);
+        } else if (this.sortCriteria === "price") {
+          return modifier * (a.price - b.price);
+        } else if (this.sortCriteria === "rating") {
+          return modifier * (a.ratings - b.ratings);
+        }
       });
     },
 
+    // Method to navigate pages
     navigatePages(page) {
       this.page = page;
     },
 
+    // Add lesson to the cart
     addToCart(lessonId) {
-      const lesson = this.lessons.find(l => l._id === lessonId);
+      const lesson = this.lessons.find((lesson) => lesson._id === lessonId);
       if (lesson && lesson.spaces > 0) {
         const cartItem = { ...lesson };
         cartItem.spaces--;
@@ -78,81 +76,93 @@ var app = new Vue({
       }
     },
 
+    // Remove item from the cart
     removeItem(index) {
-      const removed = this.cart[index];
-      const original = this.lessons.find(l => l._id === removed._id);
-      if (original) {
-        original.spaces++;
+      const removedItem = this.cart[index];
+      const originalLesson = this.lessons.find(
+        (lesson) => lesson._id === removedItem._id
+      );
+      if (originalLesson) {
+        originalLesson.spaces++;
       }
       this.cart.splice(index, 1);
     },
 
+    // Submit order function
     async handleSubmit() {
       try {
-        const response = await fetch(`${API_BASE}/lessons/order`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...this.order,
-            cart: this.cart.map(item => ({
-              id: item._id,
-              subject: item.subject,
-              price: item.price,
-              location: item.location
-            }))
-          })
-        });
-
+        const response = await fetch(
+          "https://growafter-server.onrender.com/api/lessons/order",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              ...this.order,
+              cart: this.cart.map((lesson) => ({
+                id: lesson._id,
+                subject: lesson.subject,
+                price: lesson.price,
+                location: lesson.location,
+              })),
+            }),
+          }
+        );
         if (!response.ok) throw new Error("Order submission failed");
 
-        // Update lesson spaces
+        // After order submission, update spaces in the database for each lesson
         await Promise.all(
-          this.cart.map(lesson =>
-            fetch(`${API_BASE}/lessons/${lesson._id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ spaces: lesson.spaces })
-            })
+          this.cart.map((lesson) =>
+            fetch(
+              `https://growafter-server.onrender.com/api/lessons/${lesson._id}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ spaces: lesson.spaces }),
+              }
+            )
           )
         );
 
         this.submitted = true;
-        this.fetchLessons();
+        this.fetchLessons();  // Refresh lessons after order submission
 
+        // Reset form and cart after submission
         setTimeout(() => {
-          this.order = {
-            firstName: "", lastName: "", email: "", city: "", state: "", zipCode: "", phoneNumber: "", deliveryMethod: ""
-          };
+          this.order = { firstName: "", lastName: "", email: "", state: "", phoneNumber: "" };
           this.cart = [];
-        }, 10000);
+        }, 100000);
 
         this.showModal = true;
       } catch (err) {
-        console.error("❌ Failed to submit order:", err.message);
+        console.error("Failed to submit order", err.message);
       }
     },
 
+    // Handle modal close
     doneWithOrder() {
       this.page = "homePage";
       this.showModal = false;
       this.submitted = false;
     },
 
+    // Search function
     async searchLessons() {
       const query = this.searchQuery.trim();
-      if (!query) {
+      if (query === "") {
         this.filteredLessons = [...this.lessons];
         return;
       }
       try {
-        const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(
+          `https://growafter-server.onrender.com/api/search?q=${encodeURIComponent(query)}`
+        );
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
         this.filteredLessons = data;
       } catch (err) {
-        console.error("❌ Failed to search lessons:", err.message);
+        console.error("Failed to search lessons", err.message);
       }
-    }
+    },
   },
 
   computed: {
@@ -162,12 +172,12 @@ var app = new Vue({
     isCartEmpty() {
       return this.cart.length === 0;
     },
-    totalAvailableSpaces() {
-      return this.lessons.reduce((sum, lesson) => sum + lesson.spaces, 0);
-    }
   },
 
   mounted() {
-    this.fetchLessons();
-  }
+    this.fetchLessons().then(() => {
+      this.filteredLessons = [...this.lessons];
+    });
+  },
 });
+
