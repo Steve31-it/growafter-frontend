@@ -1,3 +1,5 @@
+const API_BASE = "https://growafter-server.onrender.com/api";
+
 var app = new Vue({
   el: "#app",
   data: {
@@ -9,17 +11,7 @@ var app = new Vue({
     showModal: false,
     submitted: false,
 
-    lessons: [
-      {
-        _id: "test1",
-        subject: "Sample Math",
-        location: "New York, NY",
-        price: 50,
-        spaces: 5,
-        ratings: 4,
-        images: "sample.jpg"
-      }
-    ],
+    lessons: [],
     filteredLessons: [],
 
     order: {
@@ -50,13 +42,13 @@ var app = new Vue({
   methods: {
     async fetchLessons() {
       try {
-        const response = await fetch("https://growafter-server.onrender.com/api/lessons");
+        const response = await fetch(`${API_BASE}/lessons`);
         if (!response.ok) throw new Error("Failed to fetch lessons");
         const data = await response.json();
         this.lessons = data;
         this.filteredLessons = [...data];
       } catch (err) {
-        console.error("Failed to fetch lessons", err.message);
+        console.error("❌ Failed to fetch lessons:", err.message);
       }
     },
 
@@ -97,7 +89,7 @@ var app = new Vue({
 
     async handleSubmit() {
       try {
-        const response = await fetch("https://growafter-server.onrender.com/api/lessons/order", {
+        const response = await fetch(`${API_BASE}/lessons/order`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -113,9 +105,10 @@ var app = new Vue({
 
         if (!response.ok) throw new Error("Order submission failed");
 
+        // Update lesson spaces
         await Promise.all(
           this.cart.map(lesson =>
-            fetch(`https://growafter-server.onrender.com/api/lessons/${lesson._id}`, {
+            fetch(`${API_BASE}/lessons/${lesson._id}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ spaces: lesson.spaces })
@@ -135,7 +128,7 @@ var app = new Vue({
 
         this.showModal = true;
       } catch (err) {
-        console.error("Failed to submit order", err.message);
+        console.error("❌ Failed to submit order:", err.message);
       }
     },
 
@@ -152,12 +145,12 @@ var app = new Vue({
         return;
       }
       try {
-        const response = await fetch(`https://growafter-server.onrender.com/api/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
         if (!response.ok) throw new Error("Search failed");
         const data = await response.json();
         this.filteredLessons = data;
       } catch (err) {
-        console.error("Failed to search lessons", err.message);
+        console.error("❌ Failed to search lessons:", err.message);
       }
     }
   },
@@ -176,6 +169,5 @@ var app = new Vue({
 
   mounted() {
     this.fetchLessons();
-    this.filteredLessons = [...this.lessons];
   }
 });
