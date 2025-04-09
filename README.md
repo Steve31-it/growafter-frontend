@@ -1,122 +1,151 @@
+🌱 GrowAfter - After-School Course Booking Platform
 
-# 🎓 Skillora - Lesson Booking App
+GrowAfter is a beautifully designed full-stack application that allows parents and students to explore and book enriching after-school lessons across the United States. Built with a Vue.js frontend and an Express + MongoDB backend, GrowAfter provides an intuitive experience for discovering skill-building opportunities.
 
-**Skillora** is a full-stack lesson booking system built with Vue.js (frontend) and Express.js + MongoDB (backend). The platform enables users to browse, sort, search, and book various skill-based lessons such as sports, music, film production, and more.
+🌐 Live Links
 
-## 🔥 Live Demo
+Frontend (GitHub Pages): https://YOUR_USERNAME.github.io/growafter-frontend
 
-- **Frontend** (GitHub Pages): [https://hazel179.github.io/skillora-frontend](https://hazel179.github.io/skillora-frontend)  
-- **Backend API** (Render): [https://skillora-server.onrender.com](https://skillora-server.onrender.com)
+Backend API (Render): https://growafter-server.onrender.com
 
----
+🌟 Key Features
 
-## ✨ Features
+🧠 Course Browsing
 
-### 1. Lesson Display  
-- Shows a collection of skill-based lessons (e.g., football, coding, swimming) with:
-  - 🏷️ Subject  
-  - 📍 Location  
-  - 💵 Price  
-  - 🎯 Available Spaces  
-  - ⭐ Ratings  
-  - 🖼️ Dynamic images from the backend  
-- Rendered dynamically using `v-for` in Vue.
+View a curated collection of after-school programs like:
 
-### 2. Sorting & Searching  
-- Sort lessons by:
-  - Name
-  - Location
-  - Price
-  - Spaces
-  - Ratings  
-- Search bar supports real-time keyword filtering.
+🎨 Art & Creativity
 
-### 3. Add to Cart & Spaces Management  
-- Add lessons to cart (only if spaces > 0).  
-- Adding a lesson reduces the available space in real-time.  
-- "No Spaces" disables the add button.
+💻 Junior Coding
 
-### 4. Cart Page  
-- View and manage cart items.  
-- Remove lessons from the cart to restore availability.
+🤖 Robotics
 
-### 5. Checkout Process  
-- Click **Cart** → Fill out the checkout form.  
-- Validate:
-  - First/Last Name (letters only)
-  - Email
-  - Phone number
-  - City, Zip, and State selection
-  - Delivery method  
-- On submit:
-  - Order is sent to backend
-  - Spaces are updated in MongoDB
-  - Modal shows confirmation message
+🎭 Theater & Speaking
 
-### 6. Responsive Design  
-- Fully responsive layout (desktop & mobile)  
-- Simple, clean, and user-friendly UI with a pink theme
+Each course includes:
 
----
+Title / Subject
 
-## 🛠️ Technologies Used
+Location
 
-### 👩‍💻 Frontend
-- **Vue.js 2** – reactive UI for dynamic data binding  
-- **HTML & CSS** – structure and layout  
-- **Font Awesome** – icons  
-- **GitHub Pages** – for static frontend hosting
+Price
 
-### 🧠 Backend
-- **Node.js** – server-side JavaScript  
-- **Express.js** – RESTful API for lessons and orders  
-- **MongoDB Atlas** – NoSQL database storing lesson data and orders  
-- **Render** – free backend deployment
+Spaces Available
 
----
+Rating
 
-## 📁 Project Structure
+Image thumbnail from backend
 
-```
+🔍 Smart Sorting & Search
+
+Sort courses by:
+
+Name
+
+Location
+
+Price
+
+Spaces
+
+Ratings
+
+Filter with real-time search input
+
+🛒 Cart Management
+
+Add-to-cart button only active if spaces are available
+
+Reduces space count in real-time
+
+"No Spaces" disables further booking
+
+Remove lessons to free up spaces
+
+🧾 Seamless Checkout Flow
+
+Fill in required fields:
+
+Name, Email, City, State, Zip, Phone
+
+Delivery method (Pickup or Home Delivery)
+
+Validates form fields before submission
+
+Updates database & shows success modal with personalized message
+
+📱 Responsive UI
+
+Designed with mobile-first principles
+
+Clean blue-dark theme for a professional, educational feel
+
+🛠️ Tech Stack
+
+🎨 Frontend
+
+Vue.js 2
+
+HTML + SCSS/CSS
+
+Font Awesome Icons
+
+Hosted on GitHub Pages
+
+🧠 Backend
+
+Node.js + Express.js
+
+MongoDB Atlas (cloud DB)
+
+Deployed on Render
+
+📁 Directory Overview
+
+project-root/
 ├── frontend/
 │   ├── index.html
 │   ├── script.js
 │   ├── style.css
+│   └── images/
 ├── backend/
 │   ├── app.js
 │   ├── routes/
 │   ├── controllers/
-│   ├── config/
+│   ├── config/db.js
 │   ├── images/
-```
+│   ├── .env
 
----
+🧪 Running Locally
 
-## 📸 Screenshots
+Backend Setup
 
-> You can add screenshots of:
-- Home page with lessons
-- Cart view
-- Checkout form
-- Success modal
-
----
-
-## 🚀 How to Run Locally
-
-### Backend
-```bash
 cd backend
 npm install
 node app.js
-```
 
-### Frontend
-Just open `index.html` in a browser or use Live Server in VS Code.
+Frontend Setup
 
----
+Simply open index.html in your browser or use a live server extension in VS Code.
 
-## 🙌 Team & Credits
+📸 Screenshots
 
-- Developed by Khaing Nyein San Htet
-- University Coursework – CST3144 Full Stack Web Development
+Add screenshots of:
+
+Home with lessons displayed
+
+Filtered or sorted list
+
+Cart page
+
+Checkout form
+
+Order confirmation modal
+
+🤝 Credits
+
+Developed by Pyae Sone Oo
+
+For CST3144 - Full Stack Web Development Coursework (London Met)
+
+Let's grow brilliance after school, together. 🌱
