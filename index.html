@@ -4,125 +4,156 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GrowAfter</title>
-
-  <!-- Vue.js -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-  <!-- Font Awesome -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-
-  <!-- Custom CSS -->
-  <!-- <link rel="stylesheet" href="style.css" /> -->
 </head>
-<body class="bg-dark text-white">
+<body>
   <div id="app">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
-      <div class="container">
-        <a class="navbar-brand fw-bold fs-3" href="#">GrowAfter</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent="navigatePages('homePage')">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent="navigatePages('homePage')">Courses</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent="navigatePages('homePage')">About</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent="navigatePages('homePage')">Contact</a></li>
-            <li class="nav-item">
-              <button v-if="!isCartEmpty" @click="navigatePages('productPage')" class="btn btn-outline-light ms-3">
-                <i class="fa fa-cart-plus"></i> {{ countCartItems }} Cart
-              </button>
-              <button v-else disabled class="btn btn-secondary ms-3">
-                <i class="fa fa-cart-plus"></i> Cart
-              </button>
-            </li>
-          </ul>
+    <header class="navbar">
+      <div class="container nav-container">
+        <h1 class="logo">GrowAfter</h1>
+        <nav class="nav-links">
+            <a href="#" @click.prevent="navigatePages('homePage')">Dashboard</a>
+            <a href="#" @click.prevent="navigatePages('homePage')">Programs</a>
+            <a href="#" @click.prevent="navigatePages('homePage')">Team</a>
+            <a href="#" @click.prevent="navigatePages('homePage')">Support</a>
+        </nav>
+        <div class="cart-area">
+          <button v-if="!isCartEmpty" @click="navigatePages('productPage')" class="btn cart-btn">
+            <i class="fa fa-shopping-cart"></i> {{ countCartItems }}
+          </button>
+          <button v-else disabled class="btn cart-btn disabled">
+            <i class="fa fa-shopping-cart"></i> {{ countCartItems }}
+          </button>
         </div>
       </div>
-    </nav>
+    </header>
 
-    <!-- Hero -->
-    <section class="text-center py-5 bg-primary text-white">
+    <!-- Hero Section -->
+    <section class="hero">
       <div class="container">
-        <h1 class="display-4 fw-bold">Explore Skills Beyond the Classroom</h1>
-        <p class="lead">Interactive and engaging lessons for curious minds.</p>
-        <button class="btn btn-light btn-lg px-4 mt-3" @click="navigatePages('homePage')">Browse All Lessons</button>
+        <h2>Explore Your Potential Beyond the Classroom</h2>
+        <p>Elevate your skills with our professional courses.</p>
+        <button class="btn primary" @click="navigatePages('homePage')">Browse All Lessons</button>
       </div>
     </section>
 
-    <!-- Sorting + Search -->
-    <section v-if="page === 'homePage'" class="py-4">
-      <div class="container">
-        <div class="row align-items-center">
-          <div class="col-md-6 mb-3">
-            <label class="form-label">Sort by:</label>
-            <div class="d-flex gap-2">
-              <select class="form-select" v-model="sortCriteria" @change="sortLessons">
-                <option value="name">Name</option>
-                <option value="location">Location</option>
-                <option value="price">Price</option>
-                <option value="space">Spaces</option>
-                <option value="rating">Ratings</option>
-              </select>
-              <select class="form-select" v-model="sortOrder" @change="sortLessons">
-                <option value="ascending">Ascending</option>
-                <option value="descending">Descending</option>
-              </select>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Search for lessons..." v-model="searchQuery" @input="searchLessons" />
-          </div>
+    <!-- Controls -->
+    <section v-if="page === 'homePage'" class="controls">
+      <div class="container control-wrapper">
+        <div class="sort">
+          <label>Sort by:</label>
+          <select v-model="sortCriteria" @change="sortLessons">
+            <option value="name">Name</option>
+            <option value="location">Location</option>
+            <option value="price">Price</option>
+            <option value="space">Spaces</option>
+            <option value="rating">Ratings</option>
+          </select>
+          <select v-model="sortOrder" @change="sortLessons">
+            <option value="ascending">Ascending</option>
+            <option value="descending">Descending</option>
+          </select>
+        </div>
+        <div class="search">
+          <input type="text" placeholder="Search for lessons..." v-model="searchQuery" @input="searchLessons" />
         </div>
       </div>
     </section>
 
     <!-- Lessons Grid -->
-    <section v-if="page === 'homePage'" class="py-5">
+    <section v-if="page === 'homePage'" class="lessons">
       <div class="container">
-        <div class="row g-4">
-          <div class="col-md-4" v-for="lesson in filteredLessons" :key="lesson._id">
-            <div class="card h-100 text-dark">
-              <img :src="`https://growafter-server.onrender.com/images/${lesson.images}`" class="card-img-top" alt="lesson image">
-              <div class="card-body">
-                <h5 class="card-title">{{ lesson.subject }}</h5>
-                <p class="card-text">Location: {{ lesson.location }}</p>
-                <p class="card-text">Price: ${{ lesson.price }}</p>
-                <p class="card-text">Spaces: {{ lesson.spaces }}</p>
-                <p>
-                  <span v-for="rate in lesson.ratings">★</span>
-                  <span v-for="rate in 5 - lesson.ratings">☆</span>
-                </p>
-              </div>
-              <div class="card-footer bg-transparent border-top-0">
-                <button v-if="lesson.spaces > 0" @click="addToCart(lesson._id)" class="btn btn-primary w-100">Add to Cart</button>
-                <button v-else disabled class="btn btn-secondary w-100">No Spaces</button>
-              </div>
-            </div>
+        <div class="grid center">
+          <div class="lesson-card" v-for="lesson in filteredLessons" :key="lesson._id">
+            <img :src="`https://growafter-server.onrender.com/images/${lesson.images}`" alt="lesson image" />
+            <h3>{{ lesson.subject }}</h3>
+            <p><strong>Price:</strong> ${{ lesson.price }}</p>
+            <p><strong>Location:</strong> {{ lesson.location }}</p>
+            <p><strong>Spaces:</strong> {{ lesson.spaces }}</p>
+            <p class="stars">
+              <span v-for="rate in lesson.ratings">★</span>
+              <span v-for="rate in 5 - lesson.ratings">☆</span>
+            </p>
+            <button v-if="lesson.spaces > 0" @click="addToCart(lesson._id)" class="btn primary">Add to Cart</button>
+            <button v-else disabled class="btn disabled">No Spaces</button>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Cart Page -->
+    <section v-if="page === 'productPage' && !isCartEmpty" class="cart">
+      <div class="container">
+        <h2>Cart Items</h2>
+        <div class="cart-items">
+          <div class="cart-card" v-for="(item, index) in cart" :key="index">
+            <img :src="`https://growafter-server.onrender.com/images/${item.images}`" class="cart-img" />
+            <div>
+              <p><strong>{{ item.subject }}</strong></p>
+              <p>${{ item.price }}</p>
+              <p>{{ item.location }}</p>
+              <button @click="removeItem(index)" class="btn danger">Remove</button>
+            </div>
+          </div>
+        </div>
+        <div class="checkout-center">
+          <button @click="navigatePages('checkOutPage')" class="btn primary">Proceed to Checkout</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Checkout Page -->
+    <section v-if="page === 'checkOutPage'" class="checkout">
+      <div class="container">
+        <h2>Checkout</h2>
+        <form @submit.prevent="handleSubmit">
+          <input type="text" placeholder="First Name" v-model="order.firstName" required />
+          <input type="text" placeholder="Last Name" v-model="order.lastName" required />
+          <input type="email" placeholder="Email" v-model="order.email" required />
+          <input type="text" placeholder="City" v-model="order.city" required />
+          <select v-model="order.state" required>
+            <option disabled selected>Select your state</option>
+            <option v-for="(state, key) in states" :value="state">{{ key }}</option>
+          </select>
+          <input type="text" placeholder="Zip Code" v-model="order.zipCode" required />
+          <input type="text" placeholder="Phone Number" v-model="order.phoneNumber" required />
+          <select v-model="order.deliveryMethod" required>
+            <option disabled selected>Select delivery method</option>
+            <option>Home Delivery</option>
+            <option>Pick Up</option>
+          </select>
+          <button type="submit" class="btn success">Submit</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Modal -->
+    <div v-if="showModal && submitted" class="modal-overlay">
+      <div class="modal">
+        <p>Thank you, {{ order.firstName }} {{ order.lastName }}!<br>We are excited to deliver your order to {{ order.city }}, {{ order.state }}. Your support means the world to us!</p>
+        <button @click="doneWithOrder" class="btn primary">Done</button>
+      </div>
+    </div>
+
     <!-- Footer -->
-    <footer class="bg-dark text-center text-white py-4 mt-5">
+    <footer class="footer">
       <div class="container">
         <p>&copy; 2025 GrowAfter. All rights reserved.</p>
-        <div class="d-flex justify-content-center gap-4">
-          <a href="#" class="text-white">Privacy Policy</a>
-          <a href="#" class="text-white">Terms of Service</a>
-          <a href="#" class="text-white">Help</a>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Help</a>
         </div>
       </div>
     </footer>
   </div>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
